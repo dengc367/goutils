@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"time"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -11,17 +9,28 @@ import (
 // Logger return *zap.SugaredLogger
 var Logger *zap.SugaredLogger
 
+// LoggerConfig struct
+type LoggerConfig struct {
+	Filename   string `json:"filename"`
+	MaxSize    int    `json:"maxsize"`
+	MaxAge     int    `json:"max_age"`
+	MaxBackups int    `json:"max_backups"`
+}
+
 // InitLogger return nil
 /*
 init the sugar Log
 */
-func InitLogger() {
-	writeSyncer := getLogWriter()
+// logger
+func InitLogger(c *LoggerConfig) *zap.SugaredLogger {
+	writeSyncer := getLogWriter(c.Filename, c.MaxSize, c.MaxBackups, c.MaxAge)
 	encoder := getEncoder()
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
 
 	logger := zap.New(core, zap.AddCaller())
 	Logger = logger.Sugar()
+	defer Logger.Sync() // flushes buffer, if any
+	return Logger
 }
 
 func getEncoder() zapcore.Encoder {
@@ -35,29 +44,14 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
-func getLogWriter() zapcore.WriteSyncer {
+func getLogWriter(filename string, maxSize, maxBackups, maxAge int) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   "../test.log",
-		MaxSize:    1,
-		MaxBackups: 5,
-		MaxAge:     30,
+
+		Filename:   filename,
+		MaxSize:    maxSize,
+		MaxBackups: maxBackups,
+		MaxAge:     maxAge,
 		Compress:   false,
 	}
 	return zapcore.AddSync(lumberJackLogger)
-}
-
-// XLogger return text
-/*
-test xlogger
-*/
-func XLogger(text string) {
-	InitLogger()
-	defer Logger.Sync() // flushes buffer, if any
-	Logger.Infow("failed to fetch URL",
-		// Structured context as loosely typed key-value pairs.
-		"url", text,
-		"attempt", 3,
-		"backoff", time.Second,
-	)
-	Logger.Infof("Failed to fetch URL: %s", text)
 }

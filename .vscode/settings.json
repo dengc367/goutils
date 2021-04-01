@@ -1,4 +1,21 @@
 {
 	// "go.inferGopath": false,
 	"go.testFlags": ["-v"],
+	"go.buildOnSave": "workspace",
+    "go.lintOnSave": "package",
+    "go.vetOnSave": "workspace",
+    "go.coverOnSave": false,
+    "go.lintTool": "golint",
+	"go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
+    "go.useCodeSnippetsOnFunctionSuggest": true,
+    "go.autocompleteUnimportedPackages": true,
+    "go.gocodePackageLookupMode": "go",
+	"gopls": {
+		// Add parameter placeholders when completing a function.
+	   "usePlaceholders": true,
+   
+	   // If true, enable additional analyses with staticcheck.
+	   // Warning: This will significantly increase memory usage.
+	   "staticcheck": false,
+   },
 }
