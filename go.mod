@@ -1,6 +1,6 @@
 module github.com/dengc367/goutils
 
-go 1.14
+go 1.16
 
 require (
 	go.uber.org/zap v1.16.0

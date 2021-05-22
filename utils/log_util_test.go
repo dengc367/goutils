@@ -14,10 +14,12 @@ func setup() {
 	}
 	InitLogger(&c)
 }
+func teardown() {
+
+}
 
 func TestLog(t *testing.T) {
 	// XLogger("jejeedd")
-	setup()
 	Logger.Info("test for ")
 }
 
@@ -27,7 +29,6 @@ test xlogger
 */
 func TestXLogger(t *testing.T) {
 	text := "test2"
-	setup()
 	// defer Logger.Sync() // flushes buffer, if any
 	Logger.Infow("failed to fetch URL",
 		// Structured context as loosely typed key-value pairs.
@@ -36,4 +37,11 @@ func TestXLogger(t *testing.T) {
 		"backoff", time.Second,
 	)
 	Logger.Infof("Failed to fetch URL: %s", text)
+}
+
+func TestFoo(t *testing.T) {
+	setup()
+	t.Run("TestXLogger", TestXLogger)
+	t.Run("TestXLogger", TestLog)
+	teardown()
 }
